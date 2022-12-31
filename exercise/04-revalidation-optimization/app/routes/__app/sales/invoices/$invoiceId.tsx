@@ -3,6 +3,7 @@ import type { UseDataFunctionReturn } from "@remix-run/react/dist/components";
 import { json } from "@remix-run/node";
 import {
   Link,
+  ShouldReloadFunction,
   useCatch,
   useFetcher,
   useLoaderData,
@@ -47,6 +48,12 @@ export async function loader({ request, params }: LoaderArgs) {
     })),
   });
 }
+
+export const unstable_shouldReload: ShouldReloadFunction = ({ submission }) => {
+  if (submission?.action === "/login") return true;
+  if (submission?.action === "/logout") return true;
+  return false;
+};
 
 function validateAmount(amount: number) {
   if (amount <= 0) return "Must be greater than 0";
