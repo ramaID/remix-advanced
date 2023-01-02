@@ -1,6 +1,6 @@
 import type { LinksFunction, LoaderArgs, MetaFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import type { ShouldReloadFunction } from "@remix-run/react";
+import { ShouldReloadFunction, useSubmit } from "@remix-run/react";
 import {
   Links,
   LiveReload,
@@ -59,7 +59,7 @@ export default function App() {
 function LogoutTimer() {
   const [status, setStatus] = useState<"idle" | "show-modal">("idle");
   const location = useLocation();
-  // 🐨 add the useSubmit hook here so you can trigger a logout
+  const submit = useSubmit();
 
   // I've shortened the logoutTime and modalTime with these to test this more easily:
   const logoutTime = 5000;
@@ -70,11 +70,11 @@ function LogoutTimer() {
   const logoutTimer = useRef<ReturnType<typeof setTimeout>>();
 
   const logout = useCallback(() => {
-    // 🐨 log the user out by submitting to /logout
-    // 🐨 provide the `redirectTo` value as part of the body of
-    // the request so after the user logs in again they will be
-    // right back where they left off
-  }, []);
+    submit(
+      { redirectTo: location.pathname },
+      { action: "/logout", method: "post" },
+    );
+  }, [location.pathname, submit]);
 
   const cleanupTimers = useCallback(() => {
     clearTimeout(modalTimer.current);
